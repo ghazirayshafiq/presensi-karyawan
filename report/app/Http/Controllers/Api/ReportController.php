@@ -8,21 +8,18 @@ use Carbon\Carbon;
 
 class ReportController extends Controller
 {
-    // Method Helper untuk mengambil data Karyawan
     private function getEmployees()
     {
         $response = Http::get(env('EMPLOYEE_SERVICE_URL') . '/employees');
         return $response->successful() ? $response->json()['data'] : [];
     }
 
-    // Method Helper untuk mengambil data Presensi
     private function getAttendances()
     {
         $response = Http::get(env('ATTENDANCE_SERVICE_URL') . '/attendance');
         return $response->successful() ? $response->json()['data'] : [];
     }
 
-    // 1. GET /api/report/summary (Statistik Kehadiran per Karyawan)
     public function summary()
     {
         $employees = $this->getEmployees();
@@ -31,7 +28,6 @@ class ReportController extends Controller
         $report = [];
 
         foreach ($employees as $employee) {
-            // Filter presensi hanya untuk karyawan ini
             $employeeAttendances = array_filter($attendances, function ($att) use ($employee) {
                 return $att['employee_id'] == $employee['id'];
             });
@@ -44,17 +40,12 @@ class ReportController extends Controller
                 if ($att['status'] === 'on_time') {
                     $totalHadir++;
                 } elseif ($att['status'] === 'late') {
-                    $totalHadir++; // Telat tetap dihitung hadir
+                    $totalHadir++; 
                     $totalTelat++;
                 } elseif ($att['status'] === 'absent') {
                     $totalAlpha++;
                 }
             }
-
-            // Jika status alpha tidak dicatat secara eksplisit di DB, 
-            // Anda bisa menggunakan asumsi hari kerja dikurangi total hadir.
-            // Contoh asumsi: Hari kerja berjalan ada 22 hari.
-            // $totalAlpha = 22 - $totalHadir; 
 
             $report[] = [
                 'employee' => $employee['name'],
@@ -70,7 +61,6 @@ class ReportController extends Controller
         ], 200);
     }
 
-    // 2. GET /api/report/daily (Rekap Hari Ini)
     public function daily()
     {
         $employees = collect($this->getEmployees());
@@ -78,7 +68,6 @@ class ReportController extends Controller
         
         $todayStr = Carbon::today()->toDateString();
         
-        // Ambil absensi yang tanggalnya hari ini saja
         $todayAttendances = array_filter($attendances, function ($att) use ($todayStr) {
             return str_starts_with($att['checkin_time'], $todayStr);
         });
@@ -86,7 +75,6 @@ class ReportController extends Controller
         $report = [];
 
         foreach ($todayAttendances as $att) {
-            // Cari nama karyawan berdasarkan ID
             $emp = $employees->firstWhere('id', $att['employee_id']);
             
             $report[] = [
@@ -103,12 +91,10 @@ class ReportController extends Controller
         ], 200);
     }
 
-    // 3. GET /api/report/monthly (Rekap Bulanan Keseluruhan)
     public function monthly()
     {
         $attendances = $this->getAttendances();
         
-        // Mengelompokkan data berdasarkan Bulan (contoh: "2026-04")
         $groupedByMonth = [];
 
         foreach ($attendances as $att) {
@@ -128,11 +114,10 @@ class ReportController extends Controller
             }
         }
 
-        // Format ulang menjadi array biasa agar mudah dikonsumsi frontend
         $report = [];
         foreach ($groupedByMonth as $month => $stats) {
             $report[] = [
-                'month' => Carbon::parse($month)->translatedFormat('F Y'), // Menjadi "April 2026"
+                'month' => Carbon::parse($month)->translatedFormat('F Y'), 
                 'present' => $stats['present'],
                 'late' => $stats['late']
             ];
@@ -144,7 +129,6 @@ class ReportController extends Controller
         ], 200);
     }
     
-    // Opsional: Endpoint tambahan untuk dashboard frontend (Hitung total telat hari ini)
     public function lateCountToday()
     {
         $attendances = $this->getAttendances();
