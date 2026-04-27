@@ -1,0 +1,51 @@
+Employee Service API Endpoints
+Base URL: http://localhost:8000/api
+
+Authentication
+1) POST /login
+   Purpose: Login user (admin/karyawan) and return JWT token.
+   Auth: Public
+
+Employee Public Verification
+2) GET /employees/verify/{id}
+   Purpose: Return minimal employee data for inter-service validation (Attendance Service).
+   Data returned: id, name, role, department
+   Auth: Public
+
+Employee CRUD
+3) GET /employees
+   Purpose: List employee data.
+   Filter: ?department=IT|HR|Finance|Marketing|Operations
+   Access:
+   - admin: can see all employees (with optional department filter)
+   - karyawan: can only see own data
+   Auth: Bearer JWT required
+
+4) GET /employees/{employee}
+   Purpose: Get single employee detail.
+   Access:
+   - admin: can view any employee
+   - karyawan: can only view own data
+   Auth: Bearer JWT required
+
+5) POST /employees
+   Purpose: Create new employee.
+   Access: admin only
+   Auth: Bearer JWT required
+
+6) PUT /employees/{employee}
+   Purpose: Update employee data.
+   Access: admin only
+   Auth: Bearer JWT required
+
+7) DELETE /employees/{employee}
+   Purpose: Delete employee data.
+   Access: admin only
+   Auth: Bearer JWT required
+
+Standard JSON Response Format
+{
+  "status": "success|error",
+  "message": "human readable message",
+  "data": "response payload or null"
+}

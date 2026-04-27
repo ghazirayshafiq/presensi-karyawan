@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Employee;
 use App\Models\User;
 
 return [
@@ -42,6 +43,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'employees',
+        ],
     ],
 
     /*
@@ -62,6 +68,11 @@ return [
     */
 
     'providers' => [
+        'employees' => [
+            'driver' => 'eloquent',
+            'model' => Employee::class,
+        ],
+
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', User::class),
