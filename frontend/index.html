@@ -8,7 +8,6 @@
 </head>
 <body class="bg-light d-flex align-items-center justify-content-center" style="height: 100vh;">
 
-    <!-- 1. HALAMAN LOGIN -->
     <div id="loginBox" class="card shadow p-4" style="width: 100%; max-width: 400px;">
         <h4 class="text-center mb-4">Login Karyawan</h4>
         
@@ -25,7 +24,6 @@
         <button onclick="prosesLogin()" class="btn btn-primary w-100 fw-bold">Masuk</button>
     </div>
 
-    <!-- 2. HALAMAN DASHBOARD PRESENSI -->
     <div id="dashboardBox" class="card shadow p-4 text-center" style="width: 100%; max-width: 400px; display: none;">
         <h4 class="mb-4">Panel Presensi</h4>
         
@@ -34,11 +32,11 @@
         </div>
         
         <button onclick="submitCheckIn()" class="btn btn-success w-100 mb-3 fs-5 shadow-sm">
-            📍 Check-In Sekarang
+            Check-In Sekarang
         </button>
         
         <button onclick="submitCheckOut()" class="btn btn-danger w-100 mb-4 fs-5 shadow-sm">
-            🏃 Pulang (Check-Out)
+            Pulang (Check-Out)
         </button>
         
         <hr>
@@ -47,7 +45,6 @@
         </button>
     </div>
 
-    <!-- MENGHUBUNGKAN FILE JAVASCRIPT -->
     <script src="app.js"></script>
 </body>
 </html>
