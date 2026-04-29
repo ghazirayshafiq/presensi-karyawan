@@ -15,11 +15,12 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (! $token = Auth::guard('api')->attempt($credentials)) {
-            return $this->error('Email atau password salah.', null, 401);
+        if (!$token = Auth::guard('api')->attempt($credentials)) {
+            return response()->json(['error' => 'Email atau password salah.'], 401);
         }
 
-        return $this->success('Login berhasil.', [
+        return response()->json([
+            'message' => 'Login berhasil.',
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => (int) config('jwt.ttl', 60) * 60,

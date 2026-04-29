@@ -2,14 +2,30 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
-class Employee extends Model
+class Employee extends Authenticatable implements JWTSubject
 {
-    protected $fillable = ['name','position'];
+    protected $fillable = [
+        'name',
+        'position',
+        'email',
+        'password',
+    ];
 
-    public function attendences()
+    protected $hidden = [
+        'password',
+    ];
+
+    // Wajib ada untuk JWT
+    public function getJWTIdentifier()
     {
-        return $this->hasMany(Attendence::class);
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }
