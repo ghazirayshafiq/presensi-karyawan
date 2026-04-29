@@ -7,11 +7,17 @@ use Illuminate\Database\Seeder;
 
 class EmployeeSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    
     public function run(): void
-    {
-        Employee::factory(50)->create();
-    }
+{
+    Employee::create([
+        'name'     => 'admin', 
+        'email'    => 'admin@test.com',
+        'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+        'department' => 'IT',       
+        'role'    => 'admin'
+    ]);
+
+    Employee::factory(50)->create();
+}
 }

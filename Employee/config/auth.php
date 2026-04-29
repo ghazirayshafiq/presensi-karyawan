@@ -46,7 +46,7 @@ return [
 
         'api' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'provider' => 'employees',
         ],
     ],
 
@@ -70,7 +70,7 @@ return [
     'providers' => [
         'employees' => [
             'driver' => 'eloquent',
-            'model' => Employee::class,
+            'model' => App\Models\Employee::class,
         ],
 
         'users' => [

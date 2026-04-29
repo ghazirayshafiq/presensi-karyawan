@@ -33,46 +33,62 @@ class AttendenceController extends Controller
     {
         $today = Carbon::today()->toDateString();
         $now = Carbon::now();
+        
+        $employeeId = auth('api')->id() ?: auth('api')->payload()->get('sub'); 
 
-        $data = Attendence::where('employee_id',$request->employee_id)
-            ->where('date',$today)
+        if (!$employeeId) {
+            return response()->json(['message' => 'User tidak terdeteksi, silakan login ulang'], 401);
+        }
+
+        $data = Attendence::where('employee_id', $employeeId)
+            ->where('date', $today)
             ->first();
 
         if ($data && $data->check_in) {
-            return response()->json(['message'=>'sudah check in'],400);
+            return response()->json(['message' => 'Anda sudah melakukan check-in hari ini'], 400);
         }
 
         $status = $now->format('H:i:s') > '08:00:00' ? 'terlambat' : 'hadir';
 
-        return Attendence::create([
-            'employee_id'=>$request->employee_id,
-            'date'=>$today,
-            'check_in'=>$now->format('H:i:s'),
-            'status'=>$status
+        $attendance = Attendence::create([
+            'employee_id' => $employeeId,
+            'date'        => $today,
+            'check_in'    => $now->format('H:i:s'),
+            'status'      => $status
         ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Check-in berhasil!',
+            'data'    => $attendance
+        ], 201);
     }
 
     public function checkOut(Request $request)
     {
         $today = Carbon::today()->toDateString();
+        $employeeId = auth('api')->id() ?: auth('api')->payload()->get('sub'); 
 
-        $data = Attendence::where('employee_id',$request->employee_id)
-            ->where('date',$today)
+        $data = Attendence::where('employee_id', $employeeId)
+            ->where('date', $today)
             ->first();
 
         if (!$data) {
-            return response()->json(['message'=>'belum check in'],400);
+            return response()->json(['message' => 'Anda belum check-in hari ini'], 400);
         }
 
         if ($data->check_out) {
-            return response()->json(['message'=>'sudah check out'],400);
+            return response()->json(['message' => 'Anda sudah check-out hari ini'], 400);
         }
 
         $data->update([
-            'check_out'=>now()->format('H:i:s')
+            'check_out' => now()->format('H:i:s')
         ]);
 
-        return $data;
-        
+        return response()->json([
+            'success' => true,
+            'message' => 'Check-out berhasil!',
+            'data'    => $data
+        ], 200);
     }
 }
